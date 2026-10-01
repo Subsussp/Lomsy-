@@ -14,5 +14,8 @@
   },
   "dependencies": {
     "konva": "^10.7.0"
+  },
+  "allowScripts": {
+    "konva@10.7.0": true
   }
 }
