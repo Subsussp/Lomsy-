@@ -152,6 +152,9 @@ function drawActiveMode(id:string){
   }
 }
 function create_add_vanshing_point_shape(layer:Konva.Layer,xOffset:number,yOffset:number,color:string){
+  let group = new Konva.Group({
+    draggable:true
+  })
   for (let i = 0; i < polySides + 1; i++) {
     let angle = (360 / polySides) 
     let finalX = Math.cos(angle * i/ 180 * Math.PI) * polyRadius + polyX 
@@ -161,8 +164,12 @@ function create_add_vanshing_point_shape(layer:Konva.Layer,xOffset:number,yOffse
       stroke: color,
       strokeWidth: 1
     })
-    layer.add(line)
+    group.add(line)
   }
+  group.on('mousedown',(e)=>{
+    isDrawing = false
+  })
+  layer.add(group)
 }
 
 stage.add(layer)
