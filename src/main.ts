@@ -12,6 +12,7 @@ let polyX = stage.width() / 2
 let polyY = stage.height() / 2
 let polyRadius = 1920
 let layer = new Konva.Layer({
+  draggable:false,
   clip:{
     x:0,
     y:0,
@@ -36,7 +37,6 @@ let mouseDownPos;
 // mouse drawing logic 
 stage.on("mousedown",(e)=>{
   isDrawing = true
-
   let pos = stage.getPointerPosition()
   if(!pos)return
   mouseDownPos = pos
@@ -47,10 +47,16 @@ window.addEventListener('keydown',(key)=>{
   if(key.shiftKey){
     shiftClicked = true
   }
+  if(key.code == "KeyD"){
+    layer.getChildren().forEach((item)=>item.draggable(true))
+  }
 })
 window.addEventListener('keyup',(key)=>{
   if(shiftClicked){
     shiftClicked = false
+  }
+  if(key.code == "KeyD"){
+      layer.getChildren().forEach((item)=>item.draggable(false))
   }
 })
 stage.on('mousemove',(e)=>{
@@ -153,7 +159,7 @@ function drawActiveMode(id:string){
 }
 function create_add_vanshing_point_shape(layer:Konva.Layer,xOffset:number,yOffset:number,color:string){
   let group = new Konva.Group({
-    draggable:true
+    id:"group",
   })
   for (let i = 0; i < polySides + 1; i++) {
     let angle = (360 / polySides) 
