@@ -1,6 +1,7 @@
-## How to run it 
+# Losmy
+the one and only website with a guidelines for this type of drawing and it allows on-screen drawing using the mouse!!! it's just a small project i figured it's worth bringing to life :) 
 
-### Development
+## How to run it (Development)
 
 1.Clone the source code to your device
 ```sh
