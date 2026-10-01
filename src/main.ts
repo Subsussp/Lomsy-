@@ -48,6 +48,7 @@ window.addEventListener('keydown',(key)=>{
     shiftClicked = true
   }
   if(key.code == "KeyD"){
+    isDrawing = false
     layer.getChildren().forEach((item)=>item.draggable(true))
   }
 })
