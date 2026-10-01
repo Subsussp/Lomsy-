@@ -41,10 +41,9 @@ body {
 
 li{
   padding: 5px 10px;
-  background-color: #F7F7FF;
+  background-color: #070600;
   list-style: none;
-  color: #070600;
-  border-radius: 20px;
+  color: #F7F7FF;
   cursor: default;
   overflow: hidden;
   font-size: 12px;
