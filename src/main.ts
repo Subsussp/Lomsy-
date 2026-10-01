@@ -11,7 +11,16 @@ let polySides = 100
 let polyX = stage.width() / 2
 let polyY = stage.height() / 2
 let polyRadius = 1920
-let layer = new Konva.Layer()
+let layer = new Konva.Layer({
+  clip:{
+    x:0,
+    y:0,
+    width:stage.width(),
+    height:stage.height()
+  }
+})
+let drawingLayer = new Konva.Layer()
+let shiftClicked = false;
 let isDrawing = false;
 console.log(polyX);
 console.log(polyY);
@@ -24,27 +33,38 @@ let mouseDraw = new Konva.Line({
   lineJoin:"round",
   points:[]
 })
-
+let mouseDownPos;
 // mouse drawing logic 
 stage.on("mousedown",(e)=>{
   isDrawing = true
 
   let pos = stage.getPointerPosition()
   if(!pos)return
+  mouseDownPos = pos
   mouseDraw.points([pos.x,pos.y])
-  layer.add(mouseDraw)
+  drawingLayer.add(mouseDraw)
+})
+window.addEventListener('keydown',(key)=>{
+  if(key.shiftKey){
+    shiftClicked = true
+  }
+})
+window.addEventListener('keyup',(key)=>{
+  if(shiftClicked){
+    shiftClicked = false
+  }
 })
 stage.on('mousemove',(e)=>{
   if(!isDrawing)return
   const pos = stage.getPointerPosition()
   if(!pos)return
-  let guides = layer.getChildren().filter(
-    (child): child is Konva.Line => 
-    child instanceof Konva.Line && 
-    child.id() != 'mouseDrawing')
-  let drawingPos = snapToGuides(pos,guides)
-  mouseDraw.points([...mouseDraw.points(), pos.x, pos.y])
-  layer.batchDraw()
+  if(shiftClicked){
+    mouseDraw.points([mouseDownPos!.x,mouseDownPos!.y,pos.x,pos.y])
+
+  }else{
+    mouseDraw.points([...mouseDraw.points(), pos.x, pos.y])
+  }
+  drawingLayer.batchDraw()
 })
 stage.on('mouseup',(e)=>{
   isDrawing = false
@@ -56,57 +76,9 @@ stage.on('mouseup',(e)=>{
   lineJoin:"round",
   points:[]
 })
+  mouseDownPos = null
 })
 
-function snapToGuides(
-  mouse: { x: number; y: number },
-  guides: Konva.Line[],
-  threshold = 15
-): { x: number; y: number } {
-  let closestPoint = mouse
-  let closestDistance = Infinity
-
-  for (const guide of guides) {
-    const points = guide.points()
-
-    const a = {
-      x: points[0],
-      y: points[1]
-    }
-
-    const b = {
-      x: points[2],
-      y: points[3]
-    }
-
-    const dx = b.x - a.x
-    const dy = b.y - a.y
-
-    const t =
-      ((mouse.x - a.x) * dx +
-        (mouse.y - a.y) * dy) /
-      (dx * dx + dy * dy)
-
-    const point = {
-      x: a.x + t * dx,
-      y: a.y + t * dy
-    }
-
-    const distance = Math.hypot(
-      mouse.x - point.x,
-      mouse.y - point.y
-    )
-
-    if (distance < closestDistance) {
-      closestDistance = distance
-      closestPoint = point
-    }
-  }
-
-  return closestDistance <= threshold
-    ? closestPoint
-    : mouse
-}
 // buttons animation using framer 
 
 animate('nav li', {y: [50 ,0], opacity: [0,1]},{delay: stagger(0.2)})
@@ -126,10 +98,15 @@ hover('nav li ',(element)=>{
 // buttons functionality 
 
 let btns = document.querySelectorAll('li')
+let mode = window.localStorage.getItem('mode')
+if(mode){
+  btns.forEach((btn)=>btn.id == mode ? btn.classList.add('active') : btn.classList.remove('active'))
+}
 btns.forEach((btn)=>{
   btn.addEventListener('click',(e)=>{
     btns.forEach((btn)=>btn.classList.remove('active'))
     btn.classList.toggle('active')
+    window.localStorage.setItem('mode',btn.id)
     drawActiveMode(btn.id)
   })
 })
@@ -184,4 +161,5 @@ function create_add_vanshing_point_shape(layer:Konva.Layer,xOffset:number,yOffse
 }
 
 stage.add(layer)
+stage.add(drawingLayer)
 layer.draw()
