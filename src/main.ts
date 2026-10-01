@@ -1,6 +1,6 @@
 import Konva from 'konva'
 import './style.css'
-import {animate, scale, stagger,hover} from "motion"
+import {animate, stagger,hover} from "motion"
 
 let stage = new Konva.Stage({
   container: 'app',
@@ -35,7 +35,7 @@ let mouseDraw = new Konva.Line({
 })
 let mouseDownPos;
 // mouse drawing logic 
-stage.on("mousedown",(e)=>{
+stage.on("mousedown",()=>{
   isDrawing = true
   let pos = stage.getPointerPosition()
   if(!pos)return
@@ -60,7 +60,7 @@ window.addEventListener('keyup',(key)=>{
       layer.getChildren().forEach((item)=>item.draggable(false))
   }
 })
-stage.on('mousemove',(e)=>{
+stage.on('mousemove',()=>{
   if(!isDrawing)return
   const pos = stage.getPointerPosition()
   if(!pos)return
@@ -72,7 +72,7 @@ stage.on('mousemove',(e)=>{
   }
   drawingLayer.batchDraw()
 })
-stage.on('mouseup',(e)=>{
+stage.on('mouseup',()=>{
   isDrawing = false
   mouseDraw = new Konva.Line({
   id:"mouseDrawing",
@@ -109,7 +109,7 @@ if(mode){
   btns.forEach((btn)=>btn.id == mode ? btn.classList.add('active') : btn.classList.remove('active'))
 }
 btns.forEach((btn)=>{
-  btn.addEventListener('click',(e)=>{
+  btn.addEventListener('click',()=>{
     if(btn.classList.contains('active') && !btn.classList.contains("comment")){
       btn.classList.add("comment")
       animate(layer.getCanvas(), {opacity:0})
@@ -173,7 +173,7 @@ function create_add_vanshing_point_shape(layer:Konva.Layer,xOffset:number,yOffse
     })
     group.add(line)
   }
-  group.on('mousedown',(e)=>{
+  group.on('mousedown',()=>{
     isDrawing = false
   })
   layer.add(group)

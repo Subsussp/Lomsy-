@@ -3,6 +3,14 @@
 
 The one and only website with a guidelines for this type of drawing and it allows on-screen drawing using the mouse!!! it's just a small project i figured it's worth bringing to life :) 
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Click%20Here-blue?style=for-the-badge&logo=vercel)](https://subsussp.github.io/Lomsy-/)
+
+## Shortcuts 
+
+* Hold **D** to drag vanishing points
+
+* Hold **Shift** while drawing to draw in straight lines
+
 ## How to run it (Development)
 
 1.Clone the source code to your device
