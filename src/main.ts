@@ -12,9 +12,102 @@ let polyX = stage.width() / 2
 let polyY = stage.height() / 2
 let polyRadius = 1920
 let layer = new Konva.Layer()
-
+let isDrawing = false;
 console.log(polyX);
 console.log(polyY);
+
+let mouseDraw = new Konva.Line({
+  id:"mouseDrawing",
+  stroke: "black",
+  strokeWidth:3,
+  lineCap:"round",
+  lineJoin:"round",
+  points:[]
+})
+
+// mouse drawing logic 
+stage.on("mousedown",(e)=>{
+  isDrawing = true
+
+  let pos = stage.getPointerPosition()
+  if(!pos)return
+  mouseDraw.points([pos.x,pos.y])
+  layer.add(mouseDraw)
+})
+stage.on('mousemove',(e)=>{
+  if(!isDrawing)return
+  const pos = stage.getPointerPosition()
+  if(!pos)return
+  let guides = layer.getChildren().filter(
+    (child): child is Konva.Line => 
+    child instanceof Konva.Line && 
+    child.id() != 'mouseDrawing')
+  let drawingPos = snapToGuides(pos,guides)
+  mouseDraw.points([...mouseDraw.points(), pos.x, pos.y])
+  layer.batchDraw()
+})
+stage.on('mouseup',(e)=>{
+  isDrawing = false
+  mouseDraw = new Konva.Line({
+  id:"mouseDrawing",
+  stroke: "black",
+  strokeWidth:3,
+  lineCap:"round",
+  lineJoin:"round",
+  points:[]
+})
+})
+
+function snapToGuides(
+  mouse: { x: number; y: number },
+  guides: Konva.Line[],
+  threshold = 15
+): { x: number; y: number } {
+  let closestPoint = mouse
+  let closestDistance = Infinity
+
+  for (const guide of guides) {
+    const points = guide.points()
+
+    const a = {
+      x: points[0],
+      y: points[1]
+    }
+
+    const b = {
+      x: points[2],
+      y: points[3]
+    }
+
+    const dx = b.x - a.x
+    const dy = b.y - a.y
+
+    const t =
+      ((mouse.x - a.x) * dx +
+        (mouse.y - a.y) * dy) /
+      (dx * dx + dy * dy)
+
+    const point = {
+      x: a.x + t * dx,
+      y: a.y + t * dy
+    }
+
+    const distance = Math.hypot(
+      mouse.x - point.x,
+      mouse.y - point.y
+    )
+
+    if (distance < closestDistance) {
+      closestDistance = distance
+      closestPoint = point
+    }
+  }
+
+  return closestDistance <= threshold
+    ? closestPoint
+    : mouse
+}
+// buttons animation using framer 
 
 animate('nav li', {y: [50 ,0], opacity: [0,1]},{delay: stagger(0.2)})
 hover('nav li ',(element)=>{
@@ -29,8 +122,10 @@ hover('nav li ',(element)=>{
     animate(placeholder, {opacity:1,letterSpacing: "normal"})
   }
 })
-let btns = document.querySelectorAll('li')
 
+// buttons functionality 
+
+let btns = document.querySelectorAll('li')
 btns.forEach((btn)=>{
   btn.addEventListener('click',(e)=>{
     btns.forEach((btn)=>btn.classList.remove('active'))
@@ -38,12 +133,11 @@ btns.forEach((btn)=>{
     drawActiveMode(btn.id)
   })
 })
+
+// shapes logic i guess? 
 let activeMode = findActiveMode(btns)
 drawActiveMode(activeMode)
-stage._pointerdown((e)=>{
-  console.log(e)
-  console.log(stage.pointerPos)
-})
+
 function findActiveMode(btns: any[] | NodeListOf<HTMLLIElement>){
   for(const btn of btns ){
     if(btn.classList.contains('active')){
