@@ -20,7 +20,7 @@ animate('nav li', {y: [50 ,0], opacity: [0,1]},{delay: stagger(0.2)})
 hover('nav li ',(element)=>{
   let placeholder = element.querySelector('.placeholder')
   let appear = element.querySelector('.appear')
-  animate(element, { width: "130px"})
+  animate(element, { width: "120px"})
   animate(placeholder, {opacity:0})
   animate(appear, {opacity:1})
   return ()=> {
@@ -29,20 +29,65 @@ hover('nav li ',(element)=>{
     animate(placeholder, {opacity:1,letterSpacing: "normal"})
   }
 })
-let vp1 = document.getElementById('vp1')
-let vp2 = document.getElementById('vp2')
-let vp3 = document.getElementById('vp3')
-for (let i = 0; i < polySides + 1; i++) {
-  let angle = (360 / polySides) 
-  console.log(angle * i);
-  let finalX = Math.cos(angle * i/ 180 * Math.PI) * polyRadius + polyX 
-  let finalY = Math.sin(angle * i / 180 * Math.PI) * polyRadius + polyY 
-  let line = new Konva.Line({
-    points: [polyX,polyY,finalX,finalY],
-    stroke: 'red',
-    strokeWidth: 1
+let btns = document.querySelectorAll('li')
+
+btns.forEach((btn)=>{
+  btn.addEventListener('click',(e)=>{
+    btns.forEach((btn)=>btn.classList.remove('active'))
+    btn.classList.toggle('active')
+    drawActiveMode(btn.id)
   })
-  layer.add(line)
+})
+let activeMode = findActiveMode(btns)
+drawActiveMode(activeMode)
+stage._pointerdown((e)=>{
+  console.log(e)
+  console.log(stage.pointerPos)
+})
+function findActiveMode(btns: any[] | NodeListOf<HTMLLIElement>){
+  for(const btn of btns ){
+    if(btn.classList.contains('active')){
+      return btn.id
+    }
+  }
+  return undefined
 }
+
+function drawActiveMode(id:string){
+  layer.destroyChildren()
+  if(id === 'vp1'){
+    create_add_vanshing_point_shape(layer,0,0,'red')
+  }
+  if(id === 'vp2'){
+    create_add_vanshing_point_shape(layer,-polyX,0,'red')
+    create_add_vanshing_point_shape(layer,polyX,0,'blue')
+    
+  }
+  if(id === 'vp3'){
+    create_add_vanshing_point_shape(layer,-polyX,-polyY * 2 / 3,'blue')
+    create_add_vanshing_point_shape(layer,polyX,-polyY * 2 / 3,'red')
+    create_add_vanshing_point_shape(layer,0,polyY,'red')
+  }
+  if(id === 'vp4'){
+    create_add_vanshing_point_shape(layer,-polyX,0,'blue')
+    create_add_vanshing_point_shape(layer,0,-polyY,'grey')
+    create_add_vanshing_point_shape(layer,polyX,0,'red')
+    create_add_vanshing_point_shape(layer,0,polyY,'black')
+  }
+}
+function create_add_vanshing_point_shape(layer:Konva.Layer,xOffset:number,yOffset:number,color:string){
+  for (let i = 0; i < polySides + 1; i++) {
+    let angle = (360 / polySides) 
+    let finalX = Math.cos(angle * i/ 180 * Math.PI) * polyRadius + polyX 
+    let finalY = Math.sin(angle * i / 180 * Math.PI) * polyRadius + polyY 
+    let line = new Konva.Line({
+      points: [xOffset + polyX,yOffset+polyY,xOffset+ finalX,yOffset+finalY],
+      stroke: color,
+      strokeWidth: 1
+    })
+    layer.add(line)
+  }
+}
+
 stage.add(layer)
 layer.draw()

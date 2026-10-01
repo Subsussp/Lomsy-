@@ -39,15 +39,20 @@ body {
   padding: 0;
 }
 
-li{
+nav li{
   padding: 5px 10px;
-  background-color: #070600;
+  /* background-color: #070600; */
+  background-color: #0D00A4;
   list-style: none;
   color: #F7F7FF;
   cursor: default;
   overflow: hidden;
   font-size: 12px;
   backdrop-filter: blur(2px);
+}
+nav li.active{
+  background-color: #070600;
+  /* background-color: #0D00A4!important; */
 }
 nav li .appear{
   opacity: 0;
