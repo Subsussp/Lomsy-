@@ -22,8 +22,7 @@ let layer = new Konva.Layer({
 let drawingLayer = new Konva.Layer()
 let shiftClicked = false;
 let isDrawing = false;
-console.log(polyX);
-console.log(polyY);
+
 
 let mouseDraw = new Konva.Line({
   id:"mouseDrawing",
@@ -104,10 +103,16 @@ if(mode){
 }
 btns.forEach((btn)=>{
   btn.addEventListener('click',(e)=>{
-    btns.forEach((btn)=>btn.classList.remove('active'))
-    btn.classList.toggle('active')
-    window.localStorage.setItem('mode',btn.id)
-    drawActiveMode(btn.id)
+    if(btn.classList.contains('active') && !btn.classList.contains("comment")){
+      btn.classList.add("comment")
+      animate(layer.getCanvas(), {opacity:0})
+    }else{
+      btns.forEach((btn)=>{btn.classList.remove('active');btn.classList.remove('comment');})
+      btn.classList.toggle('active')
+      window.localStorage.setItem('mode',btn.id)
+      drawActiveMode(btn.id)
+    }
+
   })
 })
 
